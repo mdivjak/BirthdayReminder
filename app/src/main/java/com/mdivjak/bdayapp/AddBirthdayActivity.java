@@ -1,22 +1,27 @@
 package com.mdivjak.bdayapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.room.Room;
 
 import android.os.Bundle;
 
 import com.mdivjak.bdayapp.databinding.ActivityAddBirthdayBinding;
+import com.mdivjak.bdayapp.db.BirthdayDatabase;
+import com.mdivjak.bdayapp.db.Birthday;
+import com.mdivjak.bdayapp.viewModels.BirthdayViewModel;
+import com.mdivjak.bdayapp.viewModels.Injection;
 
 public class AddBirthdayActivity extends AppCompatActivity {
     private ActivityAddBirthdayBinding binding;
-    private AppDatabase db;
+    private BirthdayViewModel birthdayViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAddBirthdayBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "birthdays.db").allowMainThreadQueries().build();
+        birthdayViewModel = new ViewModelProvider(this, Injection.provideBirthdayViewModelFactory(this)).get(BirthdayViewModel.class);
 
         binding.addBdayButton.setOnClickListener(view -> {
             Birthday bday = new Birthday();
@@ -24,7 +29,7 @@ public class AddBirthdayActivity extends AppCompatActivity {
             bday.lastName = binding.lastname.getEditText().getText().toString();
             bday.birthday = binding.birthday.getText().toString();
 
-            db.birthdayDao().insertBirthday(bday);
+            birthdayViewModel.insertBirthday(bday);
         });
 
     }

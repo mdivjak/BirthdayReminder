@@ -1,16 +1,17 @@
-package com.mdivjak.bdayapp;
+package com.mdivjak.bdayapp.db;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+
+import com.mdivjak.bdayapp.db.Birthday;
 
 import java.util.List;
 
 @Dao
 public interface BirthdayDao {
     @Query("select * from birthday")
-    public List<Birthday> getAll();
+    public List<Birthday> getAllBirthdays();
 
     @Insert
     public void insertBirthday(Birthday birthday);

@@ -1,8 +1,6 @@
 package com.mdivjak.bdayapp;
 
-import android.text.Layout;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -10,16 +8,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.mdivjak.bdayapp.databinding.ViewHolderBirthdayBinding;
-
-import java.util.List;
+import com.mdivjak.bdayapp.db.BirthdayDatabase;
+import com.mdivjak.bdayapp.db.Birthday;
+import com.mdivjak.bdayapp.viewModels.BirthdayViewModel;
 
 public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.BirthdayViewHolder> {
     private final ListBirthdaysActivity mainActivity;
-    private AppDatabase db;
+    private BirthdayViewModel birthdayViewModel;
 
-    public BirthdayAdapter(ListBirthdaysActivity mainActivity) {
+    public BirthdayAdapter(ListBirthdaysActivity mainActivity, BirthdayViewModel birthdayViewModel) {
         this.mainActivity = mainActivity;
-        db = Room.databaseBuilder(mainActivity.getApplicationContext(), AppDatabase.class, "birthdays.db").allowMainThreadQueries().build();
+        this.birthdayViewModel = birthdayViewModel;
     }
 
     @NonNull
@@ -35,19 +34,19 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
 
     @Override
     public void onBindViewHolder(@NonNull BirthdayViewHolder holder, int position) {
-        Birthday bday = db.birthdayDao().getAll().get(position);
+        Birthday bday = birthdayViewModel.getAllBirthdays().get(position);
         holder.binding.firstName.setText(bday.firstName);
         holder.binding.lastName.setText(bday.lastName);
         holder.binding.birthday.setText(bday.birthday);
         holder.binding.deleteBirthday.setOnClickListener(view -> {
-            db.birthdayDao().deleteBirthday(bday.uid);
+            birthdayViewModel.deleteBirthday(bday.uid);
             notifyDataSetChanged();
         });
     }
 
     @Override
     public int getItemCount() {
-        return db.birthdayDao().getAll().size();
+        return birthdayViewModel.getAllBirthdays().size();
     }
 
     public class BirthdayViewHolder extends RecyclerView.ViewHolder {
@@ -56,7 +55,6 @@ public class BirthdayAdapter extends RecyclerView.Adapter<BirthdayAdapter.Birthd
         public BirthdayViewHolder(@NonNull ViewHolderBirthdayBinding itemView) {
             super(itemView.getRoot());
             this.binding = itemView;
-
         }
     }
 }
